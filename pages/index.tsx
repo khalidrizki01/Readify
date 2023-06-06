@@ -1,7 +1,18 @@
 import Head from 'next/head';
+import { signIn, signOut, useSession } from "next-auth/react";
 import styles from "../assets/styles/Home.module.css";
 
 export default function Home() {
+
+  const {data:session, status}= useSession();
+
+  if (status==='loading') {
+    return <div>Loading...</div>;
+  }
+
+  console.log({session,status});
+  
+
   return (
     <div className={styles.container}>
       <Head>
@@ -19,6 +30,9 @@ export default function Home() {
         </p>
 
         <div className={styles.grid}>
+        <button onClick={() => signIn("github", { callbackUrl: "/api/v1/restricted" })}>
+          Sign in
+        </button>
           <a href="https://nextjs.org/docs" className={styles.card}>
             <h3>Documentation &rarr;</h3>
             <p>Find in-depth information about Next.js features and API.</p>

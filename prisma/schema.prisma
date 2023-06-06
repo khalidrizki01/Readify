@@ -42,20 +42,6 @@ model Session {
   @@map(name: "sessions")
 }
 
-model User {
-  id            String    @id @default(auto()) @map("_id") @db.ObjectId
-  name          String
-  email         String    @unique
-  emailVerified DateTime? @map(name: "email_verified")
-  password      String
-  bookIDs       String[]  @db.ObjectId
-  booksRead     Book[]    @relation(fields: [bookIDs], references: [id])
-  createdAt     DateTime  @default(now()) @map(name: "created_at")
-  updatedAt     DateTime  @default(now()) @map(name: "updated_at")
-
-  @@map(name: "users")
-}
-
 model VerificationRequest {
   id         String     @id @default(auto()) @map("_id") @db.ObjectId
   identifier String
@@ -67,25 +53,29 @@ model VerificationRequest {
   @@map(name: "verification_requests")
 }
 
-model Genre {
-  id        String    @id @default(auto()) @map("_id") @db.ObjectId
-  name      String
-  bookIDs   String[]  @db.ObjectId
-  books     Book[]    @relation(fields: [bookIDs], references: [id])
+model User {
+  id            String    @id @default(auto()) @map("_id") @db.ObjectId
+  username      String    @unique
+  email         String    @unique
+  emailVerified DateTime? @map(name: "email_verified")
+  password      String
+  bookIDs       String[]  @db.ObjectId
+  booksRead     Book[]    @relation(fields: [bookIDs], references: [id])
+  createdAt     DateTime  @default(now()) @map(name: "created_at")
+  updatedAt     DateTime  @default(now()) @map(name: "updated_at")
 }
 
 model Book {
   id              String    @id @default(auto()) @map("_id") @db.ObjectId
+  book_id         Int       
   book_title      String
   ISBN            String
-  author          String
-  publisher       String
+  authors         String[]
+  language_code   String
+  average_rating  Float    @default(0)
+  rating_count    Int       @default(0)
   year_published  Int
-  cover_link      String
-  like_count      Int       @default(0)
-
-  genreIDs        String[]  @db.ObjectId
-  genres          Genre[]   @relation(fields: [genreIDs], references: [id])
+  image_url       String
 
   userIDs         String[]  @db.ObjectId
   users           User[]    @relation(fields: [userIDs], references: [id])

@@ -1,21 +1,7 @@
-import { PrismaClient } from '@prisma/client'
 
-const prisma = new PrismaClient()
+import { PrismaClient } from "@prisma/client"
 
-async function main() {
-  await prisma.$connect()
-  // Placeholder: meng-query data user dari database
-  // Ubah fungsi di bawah seperlunya
-  const allUsers = await prisma.user.findMany()
-  console.log(allUsers)
-}
+const prisma = new PrismaClient() // || globalThis.prisma
+// if (process.env.NODE_ENV !== "production") globalThis.prisma = client
 
-main()
-  .then(async () => {
-    await prisma.$disconnect()
-  })
-  .catch(async (e) => {
-    console.error(e)
-    await prisma.$disconnect()
-    process.exit(1)
-  })
+export default prisma
