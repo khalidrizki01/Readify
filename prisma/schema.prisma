@@ -42,20 +42,6 @@ model Session {
   @@map(name: "sessions")
 }
 
-model User {
-  id            String    @id @default(auto()) @map("_id") @db.ObjectId
-  name          String
-  email         String    @unique
-  emailVerified DateTime? @map(name: "email_verified")
-  password      String
-  bookIDs       String[]  @db.ObjectId
-  booksRead     Book[]    @relation(fields: [bookIDs], references: [id])
-  createdAt     DateTime  @default(now()) @map(name: "created_at")
-  updatedAt     DateTime  @default(now()) @map(name: "updated_at")
-
-  @@map(name: "users")
-}
-
 model VerificationRequest {
   id         String     @id @default(auto()) @map("_id") @db.ObjectId
   identifier String
@@ -67,26 +53,53 @@ model VerificationRequest {
   @@map(name: "verification_requests")
 }
 
-model Genre {
-  id        String    @id @default(auto()) @map("_id") @db.ObjectId
-  name      String
-  bookIDs   String[]  @db.ObjectId
-  books     Book[]    @relation(fields: [bookIDs], references: [id])
+model User {
+  id                  String    @id @default(auto()) @map("_id") @db.ObjectId
+  username            String    @unique
+  email               String    @unique
+  emailVerified       DateTime? @map(name: "email_verified")
+  password            String
+
+  booksReadIDs        String[]  @db.ObjectId
+  booksRead           Book[]    @relation(fields: [booksReadIDs], references: [id])
+
+  recommendations     Book[]    @relation(fields: [recommendationIDs], references: [id])
+  recommendationIDs   String[]  @db.ObjectId
+
+  createdAt           DateTime  @default(now()) @map(name: "created_at")
+  updatedAt           DateTime  @default(now()) @map(name: "updated_at")
+
+  ratings             Rating[]
 }
 
 model Book {
-  id              String    @id @default(auto()) @map("_id") @db.ObjectId
-  book_title      String
-  ISBN            String
-  author          String
-  publisher       String
-  year_published  Int
-  cover_link      String
-  like_count      Int       @default(0)
+  id                  String    @id @default(auto()) @map("_id") @db.ObjectId
+  book_id             Int       
+  book_title          String
+  ISBN                String
+  authors             String[]
+  language_code       String
+  average_rating      Float     @default(0)
+  rating_count        Int       @default(0)
+  year_published      Int
+  image_url           String
 
-  genreIDs        String[]  @db.ObjectId
-  genres          Genre[]   @relation(fields: [genreIDs], references: [id])
+  userReadingIDs      String[]  @db.ObjectId
+  users               User[]    @relation(fields: [userReadingIDs], references: [id])
 
-  userIDs         String[]  @db.ObjectId
-  users           User[]    @relation(fields: [userIDs], references: [id])
+  ratings             Rating[]
+
+  recommendToUserIDs  String[]  @db.ObjectId
+  recommendToUsers    User[]    @relation(fields:[recommendToUserIDs], references: [id])
+}
+
+model Rating {
+  id        String   @id @default(auto()) @map("_id") @db.ObjectId
+  userId    String   @db.ObjectId
+  bookId    String   @db.ObjectId
+  rating    Int
+  createdAt DateTime @default(now()) @map(name: "created_at")
+
+  user      User     @relation(fields: [userId], references: [id])
+  book      Book     @relation(fields: [bookId], references: [id])
 }
